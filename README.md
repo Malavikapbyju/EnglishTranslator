@@ -18,3 +18,4 @@ The user can select any accent from Voice, enter the text to be translated in th
 
 # Output
 
+Output of this project is saved into this file [https://github.com/Malavikapbyju/EnglishTranslator/blob/main/LearnEnglish_CloudProject.htm]
