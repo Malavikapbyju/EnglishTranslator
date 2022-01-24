@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+  Modified from
+     https://aws.amazon.com/blogs/ai/build-your-own-text-to-speech-applications-with-amazon-polly/,
+     last access 10.29/2917
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <title>Learn English</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        // Modify these to match your endpoint
+
+        // this one is for use with chalice local,
+        // comment out this next line if using chalice deploy
+        const API_ENDPOINT = "http://localhost:8000/Translate"
+
+        // modify this one based on the results of chalice deploy
+        //const API_ENDPOINT = "https://t0jyc05k2i.execute-api.us-east-1.amazonaws.com/api/Translate"
+    </script>
+</head>
+
+<body>
+    <div id="content">
+        Voice:
+        <select id="voiceSelected">
+            <option value="Salli">Salli US English</option>
+            <option value="Matthew">Matthew US English</option>
+            <option value="Kimberly">Kimberly US English</option>
+            <option value="Kendra">Kendra US English</option>
+            <option value="Justin">Justin US English</option>
+            <option value="Joey">Joey US English</option>
+            <option value="Joanna">Joanna US English</option>
+            <option value="Ivy">Ivy US English</option>
+            <option value="Russell">Russell Australian English</option>
+            <option value="Nicole">Nicole Australian English</option>
+            <option value="Vitoria">Vitória Brazilian Portuguese</option>
+            <option value="Ricardo">Ricardo Brazilian Portuguese</option>
+            <option value="Emma">Emma British English</option>
+            <option value="Brian">Brian British English</option>
+            <option value="Amy">Amy British English</option>
+            <option value="Chantal">Chantal Canadian French</option>
+            <option value="Enrique">Enrique Castilian Spanish</option>
+            <option value="Conchita">Conchita Castilian Spanish</option>
+            <option value="Zhiyu">Zhiyu Chinese Mandarin</option>
+            <option value="Naja">Naja Danish</option>
+            <option value="Mads">Mads Danish</option>
+            <option value="Ruben">Ruben Dutch</option>
+            <option value="Lotte">Lotte Dutch</option>
+            <option value="Mathieu">Mathieu French</option>
+            <option value="Lea">Léa French</option>
+            <option value="Celine">Céline French</option>
+            <option value="Vicki">Vicki German</option>
+            <option value="Marlene">Marlene German</option>
+            <option value="Hans">Hans German</option>
+            <option value="Karl">Karl Icelandic</option>
+            <option value="Dora">Dóra Icelandic</option>
+            <option value="Raveena">Raveena Indian English</option>
+            <option value="Aditi">Aditi Indian English</option>
+            <option value="Giorgio">Giorgio Italian</option>
+            <option value="Carla">Carla Italian</option>
+            <option value="Takumi">Takumi Japanese</option>
+            <option value="Mizuki">Mizuki Japanese</option>
+            <option value="Seoyeon">Seoyeon Korean</option>
+            <option value="Liv">Liv Norwegian</option>
+            <option value="Maja">Maja Polish</option>
+            <option value="Jan">Jan Polish</option>
+            <option value="Jacek">Jacek Polish</option>
+            <option value="Ewa">Ewa Polish</option>
+            <option value="Ines">Inês Portuguese</option>
+            <option value="Cristiano">Cristiano Portuguese</option>
+            <option value="Carmen">Carmen Romanian</option>
+            <option value="Tatyana">Tatyana Russian</option>
+            <option value="Maxim">Maxim Russian</option>
+            <option value="Astrid">Astrid Swedish</option>
+            <option value="Filiz">Filiz Turkish</option>
+            <option value="Penelope">Penélope US Spanish</option>
+            <option value="Miguel">Miguel US Spanish</option>
+            <option value="Gwyneth">Gwyneth Welsh</option>
+            <option value="Geraint">Geraint Welsh English</option>
+        </select>
+
+        <input type="submit" value="Translate" id="Translate" class="buttons">
+
+        <!--        <span id="postIDreturned"></span>-->
+        <br>
+        <br>
+
+        <textarea id="postText"></textarea>
+        <span id="charCounter">Characters: 0</span>
+
+        <br>
+        <br>
+        <table id="posts">
+            <colgroup>
+                <col>
+                    <col style="width:45%">
+                    <col style="width:30%">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>Voice</th>
+                    <th>Text in English</th>
+                    <th>Player</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
+        <script>
+
+            document.getElementById("Translate").onclick = function () {
+
+                const inputData = {
+                    "voice": $('#voiceSelected option:selected').val(),
+                    "text": $('#postText').val()
+                };
+
+                // make sure that the API_ENDPOINT ends with /Translate
+                let api_endpoint = API_ENDPOINT;
+                if (!API_ENDPOINT.endsWith('/Translate') && !API_ENDPOINT.endsWith('/Translate/')) {
+                    // does not end with /Translate or /Translate/
+                    // so put it in
+                    api_endpoint = api_endpoint
+                                   + (api_endpoint.endsWith('/') ? '' : '/')
+                                   + 'Translate';
+                }
+                $.ajax({
+                    url: api_endpoint,
+                    type: 'GET',
+                    data: inputData,
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (response) {
+                        console.log(response);
+                        const player = "<audio controls><source src='" + response['url'] + "' type='audio/mpeg'></audio>"
+                        $("#posts tbody").prepend("<tr> \
+                            <td>" + response['voice'] + "</td> \
+                            <td>" + response['text'] + "</td> \
+                            <td>" + player + "</td> \
+                            </tr>");
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            };
+
+
+            document.getElementById("postText").onkeyup = function () {
+                let length = $(postText).val().length;
+                document.getElementById("charCounter").textContent = "Characters: " + length;
+            }
+        </script>
+    </div>
+</body>
+
+</html>
